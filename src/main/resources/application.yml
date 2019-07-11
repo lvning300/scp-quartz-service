@@ -1,0 +1,63 @@
+server:
+  port: 10000
+spring:
+  application:
+    name: scp-quartz-service
+  datasource:
+    hikari:
+      idle-timeout: 60000
+      maximum-pool-size: 10
+      minimum-idle: 10
+      connection-timeout: 20000
+      connection-test-query: SELECT 1
+      pool-name: HikariPool
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/watch_cloud?useSSL=false&useUnicode=true&characterEncoding=utf-8&verifyServerCertificate=false
+    username: root
+    password: 123456
+  #quartz:
+  #  schema: classpath:org/quartz/impl/jdbcjobstore/tables_mysql_innodb.sql
+  #  job-store-type: jdbc
+  #  properties:
+  #    org:
+  #      quartz:
+  #        scheduler:
+  #          instanceName: watch_cloud
+  #          instanceId: AUTO
+  #        threadPool:
+  #          threadCount: 5
+  quartz:
+   #相关属性配置
+   properties:
+     org:
+       quartz:
+         scheduler:
+           instanceName: ${random.uuid}
+           instanceId: AUTO
+         jobStore:
+           class: org.quartz.impl.jdbcjobstore.JobStoreTX
+           driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+           tablePrefix: QRTZ_
+           isClustered: true
+           clusterCheckinInterval: 10000
+           useProperties: false
+           dataSource: watch_cloud
+         dataSource:
+           watch_cloud:
+             driver: com.mysql.cj.jdbc.Driver
+             URL: jdbc:mysql://127.0.0.1:3306/watch_cloud?useSSL=false&useUnicode=true&characterEncoding=utf-8&verifyServerCertificate=false
+             user: root
+             password: 123456
+             maxConnections: 5
+             validationQuery: select 1
+         threadPool:
+           class: org.quartz.simpl.SimpleThreadPool
+           threadCount: 10
+           threadPriority: 5
+           threadsInheritContextClassLoaderOfInitializingThread: true
+
+   #数据库方式
+   job-store-type: jdbc
+     #初始化表结构
+   #jdbc:
+   #initialize-schema: never
